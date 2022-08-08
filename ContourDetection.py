@@ -105,7 +105,13 @@ if __name__ == "__main__":
     cluster_count = 0
     for cntr in contours:
         area = cv2.contourArea(cntr)
-        if 5000 > area > 10:  # change area value for threshold
+        # round function is used to round following values to 5 decimal places
+        perimeter = round(cv2.arcLength(cntr, True), 5)  # perimeter of contour
+        AspectRatio = round((cv2.boundingRect(cntr)[2]) / (cv2.boundingRect(cntr)[3]), 5)
+        # Aspect Ratio is width to height ratio of bounding box. If contour is a perfect circle, aspect ratio = 1.
+        extent = round((cv2.contourArea(cntr)) / (cv2.boundingRect(cntr)[2] * cv2.boundingRect(cntr)[3]), 5)
+        # extent is contour area to bounding box area. If contour is a perfect circle, then extent = .7854
+        if area < 5000 and perimeter < 3000 and .3 < AspectRatio < 3 and .2 < extent:  # set limits for each variable
             # draw contours
             cv2.drawContours(img, [cntr], 0, (0, 0, 255), 5)
             cluster_count = cluster_count + 1
@@ -117,6 +123,7 @@ if __name__ == "__main__":
                     if i == 0:
                         # change text size and color here
                         cv2.putText(img, str(area), (x, y), cv2.FONT_HERSHEY_COMPLEX, 2, (0, 255, 0))
+             print("Coordinates:", cords[0], " Area:", str(area), " Perimeter:", str(perimeter), " Aspect Ratio:", str(AspectRatio), " Extent:", str(extent))
     index = index + 1
 
     print('number of particles detected:', cluster_count)
